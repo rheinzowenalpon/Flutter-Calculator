@@ -41,7 +41,7 @@ class _Calculator extends State<CalculatorFrame>{
     );
   }
   void onEqual() {
-    String? exp = _controller.text;
+    List<String> exp = _controller.text.split('');
     List<String> stack = [];
     Queue<String> queue = Queue<String>();
     String buffer = "";
@@ -100,7 +100,10 @@ class _Calculator extends State<CalculatorFrame>{
     if (stack[0].compareTo('Infinity') == 0) {
       _controller.text = 'math error';
     } else {
-      _controller.text = stack.removeLast();
+      double result = double.parse(stack.removeLast());
+      if (result - result.toInt() == 0) {
+        _controller.text = result.toInt().toString();
+      } else {_controller.text = result.toString();}
     }
   }
   List<Widget> assignSymbol(List<String> values) {
