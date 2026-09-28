@@ -17,8 +17,16 @@ class _Calculator extends State<CalculatorFrame>{
     '1', '2', '3', '÷',
     ')', '0', '.', '='
   ];
+  bool inputExceptionsExists() {
+    if ((_controller.text.compareTo('math error') == 0) ||
+        (_controller.text.compareTo('syntax error') == 0)) {
+      _controller.text = "";
+      return true;
+    } return false;
+  }
   void onPress(String value) {
-    if (value == 'CLR') {onClear();}
+    if (inputExceptionsExists()) {return;}
+    else if (value == 'CLR') {onClear();}
     else if (value == 'DEL') {onDelete();}
     else if (value == '=') {onEqual();}
     else {_controller.text += value;}
@@ -27,6 +35,7 @@ class _Calculator extends State<CalculatorFrame>{
     _controller.text = "";
   }
   void onDelete() {
+    if (_controller.text == "") {return;}
     _controller.text = _controller.text.substring(
       0, _controller.text.length - 1
     );
@@ -73,18 +82,26 @@ class _Calculator extends State<CalculatorFrame>{
       if ('+-×÷'.contains(item)) {
         double value2 = double.parse(stack.removeLast());
         double value1 = double.parse(stack.removeLast());
-        if (item == "÷") {
-          stack.add((value1/value2).toString());
-        } else if (item == '×') {
-          stack.add((value1*value2).toString());
-        } else if (item == '-') {
-          stack.add((value1-value2).toString());
-        } else if (item == '+') {
-          stack.add((value1+value2).toString());
+        try {
+          if (item == "÷") {
+            stack.add((value1/value2).toString());
+          } else if (item == '×') {
+            stack.add((value1*value2).toString());
+          } else if (item == '-') {
+            stack.add((value1-value2).toString());
+          } else if (item == '+') {
+            stack.add((value1+value2).toString());
+          }
+        } on Exception {
+          _controller.text = 'syntax error';
         }
       } else {stack.add(item);}
     }
-    _controller.text = stack.removeLast();
+    if (stack[0].compareTo('Infinity') == 0) {
+      _controller.text = 'math error';
+    } else {
+      _controller.text = stack.removeLast();
+    }
   }
   List<Widget> assignSymbol(List<String> values) {
     List<Widget> textButtons = [];
